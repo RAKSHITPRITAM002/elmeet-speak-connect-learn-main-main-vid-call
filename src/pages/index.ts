@@ -12,6 +12,7 @@ export { default as Meeting } from './Meeting';
 export { default as MeetingEnhanced } from './MeetingEnhanced';
 export { default as MeetingNew } from './MeetingNew';
 export { default as MeetingPreJoin } from './MeetingPreJoin';
+export { default as MeetingPreJoinEnhanced } from './MeetingPreJoinEnhanced';
 export { default as NotFound } from './NotFound';
 export { default as PasswordReset } from './PasswordReset';
 export { default as Pricing } from './Pricing';

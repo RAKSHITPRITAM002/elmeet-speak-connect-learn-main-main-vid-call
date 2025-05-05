@@ -11,6 +11,7 @@ import LanguageTools from './LanguageTools';
 import VirtualBackground from './VirtualBackground';
 import { AnnotationCanvas, AnnotationCanvasRef } from './AnnotationCanvas';
 import { AnnotationToolbar } from './AnnotationToolbar';
+import ScreenShareAnnotation from './ScreenShareAnnotation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
@@ -1217,7 +1218,11 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
 
                   {/* Screen share video */}
                   {isScreenSharing && screenShareStream && (
-                    <div className="video-container relative col-span-2 bg-gray-800 rounded-lg overflow-hidden shadow-lg ring-1 ring-blue-700/50 transition-all duration-300" style={{ boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)' }}>
+                    <div 
+                      ref={containerRef}
+                      className="video-container relative col-span-2 bg-gray-800 rounded-lg overflow-hidden shadow-lg ring-1 ring-blue-700/50 transition-all duration-300" 
+                      style={{ boxShadow: '0 0 10px rgba(59, 130, 246, 0.3)' }}
+                    >
                       <video
                         ref={screenShareVideoRef}
                         autoPlay
@@ -1237,6 +1242,12 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
                       <div className="absolute bottom-2 left-2 text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
                         {user?.name || 'You'} is sharing screen
                       </div>
+                      
+                      {/* Screen Share Annotation */}
+                      <ScreenShareAnnotation 
+                        isScreenSharing={isScreenSharing} 
+                        screenShareRef={containerRef} 
+                      />
                     </div>
                   )}
 

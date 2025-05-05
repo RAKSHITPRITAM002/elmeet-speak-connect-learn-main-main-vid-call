@@ -19,11 +19,12 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import SubscriptionCheckout from "./pages/SubscriptionCheckout";
 import BillingManagement from "./pages/BillingManagement";
+import MeetingPreJoin from "./pages/MeetingPreJoin";
+import MeetingPreJoinEnhanced from "./pages/MeetingPreJoinEnhanced";
 // Import contexts
 import { AuthProvider } from "./contexts/AuthContext";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
 import { Toaster } from "@/components/ui/toaster";
-import { MeetingPreJoin } from "pages";
 
 const App = () => {
   return (
@@ -69,3 +70,4 @@ const App = () => {
 };
 
 export default App;
+

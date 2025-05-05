@@ -23,6 +23,7 @@ interface BackgroundOption {
   url?: string;
   name: string;
   thumbnail?: string;
+  fit?: "cover" | "contain" | "fill";
 }
 
 interface VirtualBackgroundProps {

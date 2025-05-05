@@ -1,6 +1,8 @@
 // Barrel file for meeting components
 export { AnnotationCanvas } from './AnnotationCanvas';
 export { AnnotationToolbar } from './AnnotationToolbar';
+export { default as FloatingAnnotationToolbar } from './FloatingAnnotationToolbar';
+export { default as ScreenShareAnnotation } from './ScreenShareAnnotation';
 export { default as Chat } from './Chat';
 export { ChatPanel } from './ChatPanel';
 export { ConferenceControls } from './ConferenceControls';
@@ -20,3 +22,5 @@ export { default as RolePlay } from './RolePlay';
 export { default as MultimediaPlayer } from './MultimediaPlayer';
 export { default as LanguageTools } from './LanguageTools';
 export { default as VirtualBackground } from './VirtualBackground';
+export { default as PreJoinMeeting } from './PreJoinMeetingFixed';
+export { default as PreJoinMeetingEnhanced } from './PreJoinMeetingEnhanced';

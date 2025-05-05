@@ -418,6 +418,9 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
             currentTool={currentTool}
             currentColor={currentColor}
             currentWidth={currentWidth}
+            isScreenSharing={isScreenSharing}
+            onUndo={undoAnnotation}
+            onRedo={redoAnnotation}
           />
         </>
       )}
