@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import PreJoinMeeting from '@/components/meeting/PreJoinMeeting';
 import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
+import PreJoinScreen from '@/components/meeting/PreJoinScreen';
 
 interface BackgroundOption {
   id: string;
@@ -32,13 +33,17 @@ const MeetingPreJoin = () => {
     videoEnabled: boolean;
     userName: string;
     background: BackgroundOption;
+    selectedAudioDevice: string;
+    selectedVideoDevice: string;
   }) => {
     // Save meeting preferences to localStorage
     localStorage.setItem('meetingPreferences', JSON.stringify({
       audioEnabled: options.audioEnabled,
       videoEnabled: options.videoEnabled,
       userName: options.userName,
-      background: options.background
+      background: options.background,
+      selectedAudioDevice: options.selectedAudioDevice,
+      selectedVideoDevice: options.selectedVideoDevice
     }));
 
     // Navigate to the meeting with the selected options
@@ -47,7 +52,9 @@ const MeetingPreJoin = () => {
         audioEnabled: options.audioEnabled,
         videoEnabled: options.videoEnabled,
         userName: options.userName,
-        background: options.background
+        background: options.background,
+        selectedAudioDevice: options.selectedAudioDevice,
+        selectedVideoDevice: options.selectedVideoDevice
       } 
     });
   };
@@ -55,15 +62,32 @@ const MeetingPreJoin = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-white text-xl">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 size={48} className="text-white animate-spin" />
+          <div className="text-white text-xl">Preparing your meeting...</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <PreJoinMeeting 
+    <PreJoinScreen 
       meetingId={meetingId || ''} 
-      onJoin={handleJoinMeeting} 
+      onJoin={(options) => {
+        handleJoinMeeting({
+          audioEnabled: options.audio,
+          videoEnabled: options.video,
+          userName: options.userName,
+          background: {
+            id: options.backgroundType || "none",
+            type: (options.backgroundType as "blur" | "image" | "none") || "none",
+            url: options.backgroundValue || undefined,
+            name: options.backgroundType || "None"
+          },
+          selectedAudioDevice: "",
+          selectedVideoDevice: ""
+        });
+      }}
     />
   );
 };
