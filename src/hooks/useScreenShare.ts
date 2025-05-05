@@ -73,52 +73,73 @@ export const useScreenShare = () => {
   // Start optimized video sharing (for YouTube, etc.)
   const startOptimizedVideoShare = async (): Promise<MediaStream | null> => {
     try {
-      // Enhanced options specifically optimized for YouTube and video content
-      const mediaOptions: DisplayMediaStreamConstraints = {
-        video: {
-          cursor: 'always',
-          displaySurface: 'browser',
-          logicalSurface: true,
-          // Higher frameRate for smoother video playback
-          frameRate: { ideal: 60, max: 60 },
-          // Higher resolution for better quality
-          width: { ideal: 1920, max: 3840 },
-          height: { ideal: 1080, max: 2160 },
-          // Prioritize quality over performance
-          contentHint: 'detail',
-        },
-        audio: {
-          // Disable audio processing to preserve original audio quality
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-          suppressLocalAudioPlayback: false,
-          // Ensure system audio is included
-          systemAudio: 'include',
-        },
-        // Prefer current tab for YouTube sharing
-        preferCurrentTab: true,
+      // Use a more compatible approach with basic options first
+      let mediaOptions: any = {
+        video: true,
+        audio: true
       };
+      
+      // Check if browser supports advanced constraints
+      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      const isFirefox = /Firefox/.test(navigator.userAgent);
+      const isEdge = /Edg/.test(navigator.userAgent);
+      
+      console.log('Browser detection:', { isChrome, isFirefox, isEdge });
+      
+      // Apply advanced options for supported browsers
+      if (isChrome || isEdge) {
+        // Chrome and Edge support more advanced options
+        mediaOptions = {
+          video: {
+            cursor: 'always',
+            // Higher frameRate for smoother video playback
+            frameRate: { ideal: 30 },
+            // Higher resolution for better quality
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          },
+          audio: {
+            // Disable audio processing to preserve original audio quality
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false
+          }
+        };
+        
+        // Add Chrome-specific options
+        if (isChrome) {
+          // @ts-ignore - TypeScript doesn't recognize these Chrome-specific options
+          mediaOptions.preferCurrentTab = true;
+        }
+      } else if (isFirefox) {
+        // Firefox has different constraints
+        mediaOptions = {
+          video: {
+            frameRate: { ideal: 30 },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          },
+          audio: true
+        };
+      }
       
       console.log('Starting optimized video share with options:', mediaOptions);
       
       // Request the display media with optimized settings
       const stream = await navigator.mediaDevices.getDisplayMedia(mediaOptions);
       
-      // Apply additional optimizations to the tracks
+      // Apply additional optimizations to the tracks if supported
       stream.getVideoTracks().forEach(track => {
-        // Set content hint to detail for better quality
-        if ('contentHint' in track) {
-          track.contentHint = 'detail';
-        }
-        
-        // Log track constraints for debugging
-        console.log('Video track settings:', track.getSettings());
-        
-        // Set track priority to high
-        if (track.getConstraints) {
-          const constraints = track.getConstraints();
-          console.log('Video track constraints:', constraints);
+        try {
+          // Set content hint to detail for better quality if supported
+          if ('contentHint' in track) {
+            track.contentHint = 'detail';
+          }
+          
+          // Log track constraints for debugging
+          console.log('Video track settings:', track.getSettings());
+        } catch (e) {
+          console.warn('Could not apply video track optimizations:', e);
         }
       });
       
@@ -130,6 +151,7 @@ export const useScreenShare = () => {
       return stream;
     } catch (err) {
       console.error('Error starting optimized video share:', err);
+      alert('Failed to start optimized video sharing. Please try regular screen sharing instead.');
       return null;
     }
   };

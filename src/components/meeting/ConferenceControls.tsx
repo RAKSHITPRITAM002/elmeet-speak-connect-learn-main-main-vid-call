@@ -22,6 +22,7 @@ interface ConferenceControlsProps {
   onToggleAudio: () => void;
   onEndCall: () => void;
   onShareScreen?: () => void;
+  onOptimizedVideoShare?: () => void;
   onToggleChat?: () => void;
   onToggleParticipants?: () => void;
   onRaiseHand?: () => void;
@@ -49,6 +50,7 @@ export const ConferenceControls = ({
   onToggleAudio,
   onEndCall,
   onShareScreen,
+  onOptimizedVideoShare,
   onToggleChat,
   onToggleParticipants,
   onRaiseHand,
@@ -176,6 +178,14 @@ export const ConferenceControls = ({
             <ScreenShare size={20} />, 
             isScreenSharing ? "Stop Sharing" : "Share Screen", 
             onShareScreen,
+            isScreenSharing ? "active" : undefined
+          )}
+          
+          {/* Optimized Video Share */}
+          {onOptimizedVideoShare && controlButton(
+            <FileVideo size={20} />, 
+            isScreenSharing ? "Stop Video Share" : "Optimized Video Share", 
+            onOptimizedVideoShare,
             isScreenSharing ? "active" : undefined
           )}
           

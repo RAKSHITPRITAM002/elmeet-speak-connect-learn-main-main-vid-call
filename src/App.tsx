@@ -54,6 +54,7 @@ const App = () => {
             <Route path="/meeting-new/:meetingId?" element={<MeetingNew />} />
             <Route path="/meeting-enhanced/:meetingId?" element={<MeetingEnhanced />} />
             <Route path="/meeting-prejoin/:meetingId?" element={<MeetingPreJoin />} />
+            <Route path="/meeting-prejoin-enhanced/:meetingId?" element={<MeetingPreJoinEnhanced />} />
 
             {/* Admin pages */}
             <Route path="/admin" element={<AdminDashboard />} />

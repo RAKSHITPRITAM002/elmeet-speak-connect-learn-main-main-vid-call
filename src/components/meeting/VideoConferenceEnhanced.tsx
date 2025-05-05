@@ -391,125 +391,155 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
       return;
     }
 
-    // Ask for YouTube URL if this is for YouTube sharing
-    const shareYouTube = window.confirm("Would you like to share a YouTube video? Click OK for YouTube or Cancel for regular screen sharing.");
+    try {
+      // Ask for YouTube URL if this is for YouTube sharing
+      const shareYouTube = window.confirm("Would you like to share a YouTube video? Click OK for YouTube or Cancel for regular screen sharing.");
 
-    if (shareYouTube) {
-      const youtubeUrl = window.prompt("Enter YouTube URL:");
+      if (shareYouTube) {
+        const youtubeUrl = window.prompt("Enter YouTube URL:");
 
-      if (youtubeUrl) {
+        if (youtubeUrl) {
+          try {
+            // Import the MediaOptimizationService dynamically
+            const { MediaOptimizationService } = await import('../../services/MediaOptimizationService');
+
+            // Check if it's a valid YouTube URL
+            if (MediaOptimizationService.isYouTubeUrl(youtubeUrl)) {
+              // Get optimized YouTube embed
+              const result = MediaOptimizationService.optimizeYouTubeUrl(youtubeUrl, {
+                youtubeQuality: '720p',
+                prioritizeLatency: true,
+                bufferSize: 'small',
+              });
+
+              if (result.success && result.embedCode) {
+                // Create a container for the YouTube iframe
+                const container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.top = '50%';
+                container.style.left = '50%';
+                container.style.transform = 'translate(-50%, -50%)';
+                container.style.width = '80%';
+                container.style.height = '80%';
+                container.style.zIndex = '9999';
+                container.style.backgroundColor = '#000';
+                container.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+                container.style.borderRadius = '8px';
+                container.style.overflow = 'hidden';
+
+                // Add close button
+                const closeButton = document.createElement('button');
+                closeButton.innerHTML = '✕';
+                closeButton.style.position = 'absolute';
+                closeButton.style.top = '10px';
+                closeButton.style.right = '10px';
+                closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                closeButton.style.color = 'white';
+                closeButton.style.border = 'none';
+                closeButton.style.borderRadius = '50%';
+                closeButton.style.width = '30px';
+                closeButton.style.height = '30px';
+                closeButton.style.cursor = 'pointer';
+                closeButton.style.zIndex = '10000';
+                closeButton.onclick = () => {
+                  document.body.removeChild(container);
+                  setIsScreenSharing(false);
+                };
+
+                // Set the embed code
+                container.innerHTML = result.embedCode;
+                container.appendChild(closeButton);
+
+                // Add to document
+                document.body.appendChild(container);
+
+                // Set screen sharing state
+                setIsScreenSharing(true);
+
+                // Return early since we're not using the actual screen share API
+                return;
+              } else {
+                alert("Failed to optimize YouTube URL. Please try again.");
+              }
+            } else {
+              alert("Invalid YouTube URL. Please enter a valid YouTube URL.");
+            }
+          } catch (error) {
+            console.error("Error handling YouTube share:", error);
+            alert("An error occurred while trying to share YouTube video.");
+          }
+        }
+      }
+
+      // If not YouTube or YouTube failed, fall back to regular optimized screen sharing
+      console.log("Starting optimized video sharing...");
+      
+      // Show a message to the user
+      if (onError) {
+        onError("Starting optimized video sharing. Please select the tab or window you want to share.");
+      }
+      
+      const stream = await startOptimizedVideoShare();
+
+      if (stream) {
+        console.log("Optimized video sharing stream obtained:", stream);
+        
         try {
           // Import the MediaOptimizationService dynamically
           const { MediaOptimizationService } = await import('../../services/MediaOptimizationService');
 
-          // Check if it's a valid YouTube URL
-          if (MediaOptimizationService.isYouTubeUrl(youtubeUrl)) {
-            // Get optimized YouTube embed
-            const result = MediaOptimizationService.optimizeYouTubeUrl(youtubeUrl, {
-              youtubeQuality: '720p',
-              prioritizeLatency: true,
-              bufferSize: 'small',
-            });
+          // Apply optimizations for video content with more compatible settings
+          const optimizedStream = MediaOptimizationService.optimizeScreenShare(stream, {
+            videoQuality: 'high',
+            frameRate: 30,  // More compatible frame rate
+            bitrateMultiplier: 1.2,  // Slightly lower multiplier for compatibility
+            audioQuality: 'high',
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+            prioritizeLatency: true,
+          });
 
-            if (result.success && result.embedCode) {
-              // Create a container for the YouTube iframe
-              const container = document.createElement('div');
-              container.style.position = 'fixed';
-              container.style.top = '50%';
-              container.style.left = '50%';
-              container.style.transform = 'translate(-50%, -50%)';
-              container.style.width = '80%';
-              container.style.height = '80%';
-              container.style.zIndex = '9999';
-              container.style.backgroundColor = '#000';
-              container.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
-              container.style.borderRadius = '8px';
-              container.style.overflow = 'hidden';
+          setScreenShareStream(optimizedStream);
+          setIsScreenSharing(true);
 
-              // Add close button
-              const closeButton = document.createElement('button');
-              closeButton.innerHTML = '✕';
-              closeButton.style.position = 'absolute';
-              closeButton.style.top = '10px';
-              closeButton.style.right = '10px';
-              closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-              closeButton.style.color = 'white';
-              closeButton.style.border = 'none';
-              closeButton.style.borderRadius = '50%';
-              closeButton.style.width = '30px';
-              closeButton.style.height = '30px';
-              closeButton.style.cursor = 'pointer';
-              closeButton.style.zIndex = '10000';
-              closeButton.onclick = () => {
-                document.body.removeChild(container);
-                setIsScreenSharing(false);
-              };
-
-              // Set the embed code
-              container.innerHTML = result.embedCode;
-              container.appendChild(closeButton);
-
-              // Add to document
-              document.body.appendChild(container);
-
-              // Set screen sharing state
-              setIsScreenSharing(true);
-
-              // Return early since we're not using the actual screen share API
-              return;
-            } else {
-              alert("Failed to optimize YouTube URL. Please try again.");
-            }
-          } else {
-            alert("Invalid YouTube URL. Please enter a valid YouTube URL.");
+          // Add event listener for when user stops sharing
+          optimizedStream.getVideoTracks()[0].addEventListener('ended', () => {
+            setScreenShareStream(null);
+            setIsScreenSharing(false);
+          });
+          
+          // Show success message
+          if (onError) {
+            onError("Optimized video sharing started successfully. Your screen is now being shared with enhanced video quality.");
           }
         } catch (error) {
-          console.error("Error handling YouTube share:", error);
-          alert("An error occurred while trying to share YouTube video.");
+          console.error("Error optimizing screen share:", error);
+
+          // Fall back to unoptimized stream
+          setScreenShareStream(stream);
+          setIsScreenSharing(true);
+
+          // Add event listener for when user stops sharing
+          stream.getVideoTracks()[0].addEventListener('ended', () => {
+            setScreenShareStream(null);
+            setIsScreenSharing(false);
+          });
+          
+          // Show fallback message
+          if (onError) {
+            onError("Using standard screen sharing. Optimized mode couldn't be enabled.");
+          }
+        }
+      } else {
+        if (onError) {
+          onError("Failed to start optimized video sharing. Please try regular screen sharing instead.");
         }
       }
-    }
-
-    // If not YouTube or YouTube failed, fall back to regular optimized screen sharing
-    const stream = await startOptimizedVideoShare();
-
-    if (stream) {
-      try {
-        // Import the MediaOptimizationService dynamically
-        const { MediaOptimizationService } = await import('../../services/MediaOptimizationService');
-
-        // Apply optimizations for video content
-        const optimizedStream = MediaOptimizationService.optimizeScreenShare(stream, {
-          videoQuality: 'high',
-          frameRate: 60,
-          bitrateMultiplier: 1.5,
-          audioQuality: 'high',
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-          prioritizeLatency: true,
-        });
-
-        setScreenShareStream(optimizedStream);
-        setIsScreenSharing(true);
-
-        // Add event listener for when user stops sharing
-        optimizedStream.getVideoTracks()[0].addEventListener('ended', () => {
-          setScreenShareStream(null);
-          setIsScreenSharing(false);
-        });
-      } catch (error) {
-        console.error("Error optimizing screen share:", error);
-
-        // Fall back to unoptimized stream
-        setScreenShareStream(stream);
-        setIsScreenSharing(true);
-
-        // Add event listener for when user stops sharing
-        stream.getVideoTracks()[0].addEventListener('ended', () => {
-          setScreenShareStream(null);
-          setIsScreenSharing(false);
-        });
+    } catch (error) {
+      console.error("Error in handleOptimizedVideoShare:", error);
+      if (onError) {
+        onError("An error occurred while trying to share your screen. Please try again.");
       }
     }
   };
@@ -1370,6 +1400,7 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
                   onToggleAudio={handleToggleAudio}
                   onEndCall={handleEndCall}
                   onShareScreen={handleToggleScreenShare}
+                  onOptimizedVideoShare={handleOptimizedVideoShare}
                   onToggleChat={() => {
                     setSidebarContent('chat');
                     setShowSidebar(true);
