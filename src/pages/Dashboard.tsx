@@ -124,34 +124,7 @@ const Dashboard = () => {
               className="mb-4 w-full"
             />
             <div className="flex flex-wrap gap-2">
-              {/* Enhanced Setup Button - More prominent */}
-              <Button 
-                onClick={() => {
-                  const meetingId = generateUniqueID();
-                  const url = `/meeting-prejoin-enhanced/${meetingId}`;
-                  setInstantMeetingURL(`${window.location.origin}${url}`);
-                  // Store meeting title in localStorage for use in the meeting page
-                  localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Enhanced Meeting');
-                  navigate(url);
-                }} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 font-bold shadow-lg rounded-md transform transition-transform hover:scale-105"
-              >
-                Start Meeting with Enhanced Setup
-              </Button>
-              
-              {/* Other meeting options */}
-              <Button 
-                onClick={() => handleInstantMeeting(false)} 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
-              >
-                Start Now
-              </Button>
-              <Button 
-                onClick={() => handleInstantMeeting(true)} 
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
-              >
-                Start Now (New UI)
-              </Button>
+              {/* Only keep the Enhanced Meeting and Meeting with Setup options */}
               <Button 
                 onClick={() => {
                   const meetingId = generateUniqueID();
@@ -161,7 +134,7 @@ const Dashboard = () => {
                   localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Enhanced Meeting');
                   window.open(url, '_blank');
                 }} 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 font-bold shadow-lg rounded-md transform transition-transform hover:scale-105"
               >
                 Start Enhanced Meeting
               </Button>

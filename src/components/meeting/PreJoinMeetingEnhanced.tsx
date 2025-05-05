@@ -181,13 +181,37 @@ const PreJoinMeetingEnhanced: React.FC<PreJoinMeetingProps> = ({ meetingId, onJo
                 className={`relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden mb-4 ${fullscreenPreview ? 'fixed inset-0 z-50 rounded-none' : ''}`}
               >
                 {videoEnabled ? (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className={`w-full h-full object-${selectedBackground.fit || 'cover'}`}
-                  />
+                  <div className="relative w-full h-full">
+                    {/* Background image or blur */}
+                    {selectedBackground.type === "image" && selectedBackground.url && (
+                      <div 
+                        className="absolute inset-0 z-0" 
+                        style={{
+                          backgroundImage: `url(${selectedBackground.url})`,
+                          backgroundSize: selectedBackground.fit || 'cover',
+                          backgroundPosition: 'center',
+                          backgroundRepeat: 'no-repeat'
+                        }}
+                      />
+                    )}
+                    {selectedBackground.type === "blur" && (
+                      <div 
+                        className="absolute inset-0 z-0 bg-gray-800" 
+                      />
+                    )}
+                    
+                    {/* Video element */}
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className={`relative z-10 w-full h-full object-${selectedBackground.fit || 'cover'} ${selectedBackground.type === "blur" ? "backdrop-blur-md" : ""}`}
+                      style={{
+                        backgroundColor: selectedBackground.type !== "none" ? 'transparent' : undefined
+                      }}
+                    />
+                  </div>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center">
