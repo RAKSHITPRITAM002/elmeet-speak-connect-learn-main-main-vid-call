@@ -4,12 +4,14 @@ import ScreenShareAnnotationToolbar from './ScreenShareAnnotationToolbar';
 
 interface ScreenShareAnnotationProps {
   isScreenSharing: boolean;
-  screenShareRef: React.RefObject<HTMLDivElement>;
+  screenShareRef: React.RefObject<HTMLVideoElement>;
+  onToggleAnnotation?: (isAnnotating: boolean) => void;
 }
 
 const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
   isScreenSharing,
-  screenShareRef
+  screenShareRef,
+  onToggleAnnotation
 }) => {
   const [isAnnotating, setIsAnnotating] = useState(false);
   const [currentTool, setCurrentTool] = useState('pen');
@@ -130,21 +132,21 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
     const newState = !isAnnotating;
     setIsAnnotating(newState);
     
+    if (onToggleAnnotation) {
+      onToggleAnnotation(newState);
+    }
+    
     if (newState) {
       // When turning on annotation
-      // Start with the pen tool selected by default
       setCurrentTool('pen');
       
-      // Make sure the canvas captures pointer events
       if (canvasRef.current) {
         canvasRef.current.style.pointerEvents = 'auto';
       }
     } else {
       // When turning off annotation
-      // Reset drawing state
       setIsDrawing(false);
       
-      // Make sure the canvas is no longer capturing pointer events
       if (canvasRef.current) {
         canvasRef.current.style.pointerEvents = 'none';
       }

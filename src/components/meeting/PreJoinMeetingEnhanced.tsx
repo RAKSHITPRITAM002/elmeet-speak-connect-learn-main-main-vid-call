@@ -10,6 +10,7 @@ import { Mic, MicOff, Video, VideoOff, Settings, Users, Maximize, Minimize } fro
 import VirtualBackground from './VirtualBackground';
 import { useAuth } from '@/contexts/AuthContext';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import BackgroundSelector from './BackgroundSelector';
 
 interface BackgroundOption {
   id: string;

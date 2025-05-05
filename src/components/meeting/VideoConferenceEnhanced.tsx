@@ -97,6 +97,7 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
   const [annotationTool, setAnnotationTool] = useState<'pen' | 'highlighter' | 'arrow' | 'rectangle' | 'circle' | 'text' | 'eraser'>('pen');
   const [annotationColor, setAnnotationColor] = useState<string>('#FFC32B');
   const [annotationWidth, setAnnotationWidth] = useState<number>(2);
+  const [isScreenShareAnnotating, setIsScreenShareAnnotating] = useState(false);
 
   // Use the imported AnnotationCanvasRef interface
   const annotationCanvasRef = useRef<AnnotationCanvasRef>(null);
@@ -1288,7 +1289,13 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
                       {/* Screen Share Annotation */}
                       <ScreenShareAnnotation 
                         isScreenSharing={isScreenSharing} 
-                        screenShareRef={containerRef} 
+                        screenShareRef={screenShareVideoRef} 
+                        onToggleAnnotation={(state) => {
+                          setIsScreenShareAnnotating(state);
+                          if (onError) {
+                            onError(state ? 'Screen annotation enabled' : 'Screen annotation disabled');
+                          }
+                        }}
                       />
                     </div>
                   )}
@@ -1839,3 +1846,4 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
 };
 
 export default VideoConferenceEnhanced;
+
