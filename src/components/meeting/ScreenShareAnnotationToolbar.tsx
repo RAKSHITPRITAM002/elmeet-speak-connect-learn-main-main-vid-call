@@ -150,6 +150,7 @@ const ScreenShareAnnotationToolbar: React.FC<ScreenShareAnnotationToolbarProps> 
         top: `${position.y}px`,
         transition: isDragging ? 'none' : 'width 0.3s ease',
         opacity: 0.95,
+        pointerEvents: 'auto', // Always allow interaction with the toolbar
       }}
     >
       {/* Toolbar header with drag handle */}
@@ -177,7 +178,11 @@ const ScreenShareAnnotationToolbar: React.FC<ScreenShareAnnotationToolbarProps> 
             onClick={() => {
               // Set tool to pointer before closing
               onToolChange('pointer');
-              onClose();
+              
+              // Small delay to ensure the pointer tool is set before closing
+              setTimeout(() => {
+                onClose();
+              }, 50);
             }} 
             className={`${isCollapsed ? 'h-6 w-6 p-0' : 'h-6 ml-1'} text-gray-300 hover:text-white hover:bg-red-600`}
           >
@@ -445,11 +450,15 @@ const ScreenShareAnnotationToolbar: React.FC<ScreenShareAnnotationToolbarProps> 
           <div className="mt-6 border-t border-gray-600 pt-4">
             <Button 
               variant="destructive" 
-              className="w-full flex items-center justify-center"
+              className="w-full flex items-center justify-center font-bold"
               onClick={() => {
                 // Set tool to pointer before closing
                 onToolChange('pointer');
-                onClose();
+                
+                // Small delay to ensure the pointer tool is set before closing
+                setTimeout(() => {
+                  onClose();
+                }, 50);
               }}
             >
               <X size={16} className="mr-2" />
