@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
+import { AlertCircle, Loader2, CheckCircle2, Info, Mail } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { validateEmail, suggestDomains } from "@/utils/emailValidator";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -26,6 +27,9 @@ const Register = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordFeedback, setPasswordFeedback] = useState<string[]>([]);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSuggestions, setEmailSuggestions] = useState<string[]>([]);
+  const [isValidEmail, setIsValidEmail] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -33,6 +37,50 @@ const Register = () => {
       navigate("/dashboard");
     }
   }, [isAuthenticated, navigate, registrationSuccess]);
+
+  // Email validation
+  useEffect(() => {
+    if (!email) {
+      setEmailError(null);
+      setEmailSuggestions([]);
+      setIsValidEmail(false);
+      return;
+    }
+
+    // Check if it contains @ symbol
+    if (!email.includes('@')) {
+      setEmailError("Please include an @ symbol in the email address");
+      
+      // Suggest domains if user has typed something before the @
+      if (email.length > 2) {
+        const suggestedDomains = ['gmail.com', 'outlook.com', 'hotmail.com', 'yahoo.com', 'icloud.com'];
+        setEmailSuggestions(suggestedDomains);
+      } else {
+        setEmailSuggestions([]);
+      }
+      setIsValidEmail(false);
+      return;
+    }
+
+    // If there's an @ symbol, validate the email
+    const validation = validateEmail(email);
+    setIsValidEmail(validation.isValid);
+    
+    if (!validation.isValid) {
+      setEmailError(validation.message || "Invalid email address");
+      
+      // If there's a domain part, suggest similar domains
+      const domainPart = email.split('@')[1];
+      if (domainPart && domainPart.length > 1) {
+        setEmailSuggestions(suggestDomains(domainPart));
+      } else {
+        setEmailSuggestions([]);
+      }
+    } else {
+      setEmailError(null);
+      setEmailSuggestions([]);
+    }
+  }, [email]);
 
   // Password strength checker
   useEffect(() => {
@@ -96,6 +144,11 @@ const Register = () => {
       
       if (passwordStrength < 75) {
         throw new Error("Please use a stronger password");
+      }
+      
+      // Validate email
+      if (!isValidEmail) {
+        throw new Error(emailError || "Please enter a valid email address");
       }
       
       // Call registration function
@@ -206,15 +259,60 @@ const Register = () => {
             
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="mt-1"
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className={`mt-1 ${emailError ? 'border-red-500 pr-10' : isValidEmail && email ? 'border-green-500 pr-10' : ''}`}
+                />
+                {emailError && (
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-red-500">
+                    <AlertCircle className="h-4 w-4" />
+                  </div>
+                )}
+                {isValidEmail && email && !emailError && (
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-green-500">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                )}
+              </div>
+              
+              {emailError && (
+                <p className="text-xs text-red-500 mt-1 flex items-center">
+                  <Info className="h-3 w-3 mr-1" />
+                  {emailError}
+                </p>
+              )}
+              
+              {emailSuggestions.length > 0 && (
+                <div className="mt-1">
+                  <p className="text-xs text-gray-500 mb-1">Did you mean:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {emailSuggestions.map((suggestion, index) => {
+                      // If there's no @ in the email, suggest full email
+                      const suggestedEmail = email.includes('@') 
+                        ? email.split('@')[0] + '@' + suggestion 
+                        : email + '@' + suggestion;
+                        
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-2 py-1 rounded-full flex items-center"
+                          onClick={() => setEmail(suggestedEmail)}
+                        >
+                          <Mail className="h-3 w-3 mr-1" />
+                          {suggestedEmail}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
             
             <div>
@@ -289,7 +387,7 @@ const Register = () => {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={isSubmitting || isLoading || password !== confirmPassword || passwordStrength < 50}
+              disabled={isSubmitting || isLoading || password !== confirmPassword || passwordStrength < 50 || !isValidEmail}
             >
               {isSubmitting || isLoading ? (
                 <>
