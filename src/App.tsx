@@ -23,6 +23,7 @@ import BillingManagement from "./pages/BillingManagement";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
 import { Toaster } from "@/components/ui/toaster";
+import { MeetingPreJoin } from "pages";
 
 const App = () => {
   return (
@@ -51,6 +52,7 @@ const App = () => {
             <Route path="/meeting/:meetingId?" element={<Meeting />} />
             <Route path="/meeting-new/:meetingId?" element={<MeetingNew />} />
             <Route path="/meeting-enhanced/:meetingId?" element={<MeetingEnhanced />} />
+            <Route path="/meeting-prejoin/:meetingId?" element={<MeetingPreJoin />} />
 
             {/* Admin pages */}
             <Route path="/admin" element={<AdminDashboard />} />

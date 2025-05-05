@@ -11,6 +11,7 @@ declare module 'pages' {
   export { default as Meeting } from '@/pages/Meeting';
   export { default as MeetingEnhanced } from '@/pages/MeetingEnhanced';
   export { default as MeetingNew } from '@/pages/MeetingNew';
+  export { default as MeetingPreJoin } from '@/pages/MeetingPreJoin';
   export { default as NotFound } from '@/pages/NotFound';
   export { default as PasswordReset } from '@/pages/PasswordReset';
   export { default as Pricing } from '@/pages/Pricing';

@@ -149,6 +149,19 @@ const Dashboard = () => {
               >
                 Start Enhanced Meeting
               </Button>
+              <Button 
+                onClick={() => {
+                  const meetingId = generateUniqueID();
+                  const url = `/meeting-prejoin/${meetingId}`;
+                  setInstantMeetingURL(`${window.location.origin}${url}`);
+                  // Store meeting title in localStorage for use in the meeting page
+                  localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Pre-Join Meeting');
+                  navigate(url);
+                }} 
+                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2"
+              >
+                Start Meeting with Setup
+              </Button>
             </div>
           </div>
           {instantMeetingURL && (
