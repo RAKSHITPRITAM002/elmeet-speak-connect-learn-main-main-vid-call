@@ -85,6 +85,25 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
   const [searchResults, setSearchResults] = useState<DictionaryResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [copiedPhraseId, setCopiedPhraseId] = useState<string | null>(null);
+  const [dictionaryLanguage, setDictionaryLanguage] = useState<string>("english");
+  const [phrasesLanguage, setPhrasesLanguage] = useState<string>("korean");
+
+  // Available languages for different tools
+  const availableLanguages = [
+    { id: "korean", name: "Korean (한국어)" },
+    { id: "japanese", name: "Japanese (日本語)" },
+    { id: "chinese", name: "Chinese (中文)" },
+    { id: "arabic", name: "Arabic (العربية)" },
+    { id: "russian", name: "Russian (Русский)" },
+    { id: "hindi", name: "Hindi (हिन्दी)" },
+    { id: "thai", name: "Thai (ไทย)" },
+    { id: "spanish", name: "Spanish (Español)" },
+    { id: "french", name: "French (Français)" },
+    { id: "german", name: "German (Deutsch)" },
+    { id: "italian", name: "Italian (Italiano)" },
+    { id: "portuguese", name: "Portuguese (Português)" },
+    { id: "english", name: "English" }
+  ];
 
   // Keyboard layouts
   const keyboardLayouts: { [key: string]: KeyboardLayout } = {
@@ -162,7 +181,7 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
           { character: "と", label: "to" }
         ],
         [
-          { character: "な", label: "na" },
+          { character: "나", label: "na" },
           { character: "に", label: "ni" },
           { character: "ぬ", label: "nu" },
           { character: "ね", label: "ne" },
@@ -541,6 +560,193 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
           { character: " ", label: "Space", width: 2, type: "special" }
         ]
       ]
+    },
+    arabic2: {
+      id: "arabic",
+      name: "Arabic",
+      language: "Arabic",
+      rows: [
+        [
+          { character: "ض", label: "ḍ" },
+          { character: "ص", label: "ṣ" },
+          { character: "ث", label: "th" },
+          { character: "ق", label: "q" },
+          { character: "ف", label: "f" },
+          { character: "غ", label: "gh" },
+          { character: "ع", label: "ʿ" },
+          { character: "ه", label: "h" },
+          { character: "خ", label: "kh" },
+          { character: "ح", label: "ḥ" }
+        ],
+        [
+          { character: "ش", label: "sh" },
+          { character: "س", label: "s" },
+          { character: "ي", label: "y" },
+          { character: "ب", label: "b" },
+          { character: "ل", label: "l" },
+          { character: "ا", label: "a" },
+          { character: "ت", label: "t" },
+          { character: "ن", label: "n" },
+          { character: "م", label: "m" },
+          { character: "ك", label: "k" }
+        ],
+        [
+          { character: "ظ", label: "ẓ" },
+          { character: "ط", label: "ṭ" },
+          { character: "ذ", label: "dh" },
+          { character: "د", label: "d" },
+          { character: "ز", label: "z" },
+          { character: "ر", label: "r" },
+          { character: "و", label: "w" },
+          { character: "ة", label: "h" },
+          { character: "ء", label: "ʾ" }
+        ],
+        [
+          { character: " ", label: "Space", width: 4, type: "special" }
+        ]
+      ]
+    },
+    russian2: {
+      id: "russian",
+      name: "Russian",
+      language: "Russian",
+      rows: [
+        [
+          { character: "й", label: "y" },
+          { character: "ц", label: "ts" },
+          { character: "у", label: "u" },
+          { character: "к", label: "k" },
+          { character: "е", label: "e" },
+          { character: "н", label: "n" },
+          { character: "г", label: "g" },
+          { character: "ш", label: "sh" },
+          { character: "щ", label: "shch" },
+          { character: "з", label: "z" },
+          { character: "х", label: "kh" }
+        ],
+        [
+          { character: "ф", label: "f" },
+          { character: "ы", label: "y" },
+          { character: "в", label: "v" },
+          { character: "а", label: "a" },
+          { character: "п", label: "p" },
+          { character: "р", label: "r" },
+          { character: "о", label: "o" },
+          { character: "л", label: "l" },
+          { character: "д", label: "d" },
+          { character: "ж", label: "zh" },
+          { character: "э", label: "e" }
+        ],
+        [
+          { character: "я", label: "ya" },
+          { character: "ч", label: "ch" },
+          { character: "с", label: "s" },
+          { character: "м", label: "m" },
+          { character: "и", label: "i" },
+          { character: "т", label: "t" },
+          { character: "ь", label: "'" },
+          { character: "б", label: "b" },
+          { character: "ю", label: "yu" }
+        ],
+        [
+          { character: " ", label: "Space", width: 4, type: "special" }
+        ]
+      ]
+    },
+    hindi2: {
+      id: "hindi",
+      name: "Hindi",
+      language: "Hindi",
+      rows: [
+        [
+          { character: "ौ", label: "au" },
+          { character: "ै", label: "ai" },
+          { character: "ा", label: "ā" },
+          { character: "ी", label: "ī" },
+          { character: "ू", label: "ū" },
+          { character: "ब", label: "b" },
+          { character: "ह", label: "h" },
+          { character: "ग", label: "g" },
+          { character: "द", label: "d" },
+          { character: "ज", label: "j" }
+        ],
+        [
+          { character: "ो", label: "o" },
+          { character: "े", label: "e" },
+          { character: "्", label: "्" },
+          { character: "ि", label: "i" },
+          { character: "ु", label: "u" },
+          { character: "प", label: "p" },
+          { character: "र", label: "r" },
+          { character: "क", label: "k" },
+          { character: "त", label: "t" },
+          { character: "च", label: "c" }
+        ],
+        [
+          { character: "ॉ", label: "ŏ" },
+          { character: "ं", label: "ṃ" },
+          { character: "म", label: "m" },
+          { character: "न", label: "n" },
+          { character: "व", label: "v" },
+          { character: "ल", label: "l" },
+          { character: "स", label: "s" },
+          { character: "य", label: "y" }
+        ],
+        [
+          { character: " ", label: "Space", width: 4, type: "special" }
+        ]
+      ]
+    },
+    thai2: {
+      id: "thai",
+      name: "Thai",
+      language: "Thai",
+      rows: [
+        [
+          { character: "ๅ", label: "ๅ" },
+          { character: "/", label: "/" },
+          { character: "_", label: "_" },
+          { character: "ภ", label: "ph" },
+          { character: "ถ", label: "th" },
+          { character: "ุ", label: "u" },
+          { character: "ึ", label: "ue" },
+          { character: "ค", label: "kh" },
+          { character: "ต", label: "t" },
+          { character: "จ", label: "c" },
+          { character: "ข", label: "kh" },
+          { character: "ช", label: "ch" }
+        ],
+        [
+          { character: "ๆ", label: "ๆ" },
+          { character: "ไ", label: "ai" },
+          { character: "ำ", label: "am" },
+          { character: "พ", label: "ph" },
+          { character: "ะ", label: "a" },
+          { character: "ั", label: "a" },
+          { character: "ี", label: "i" },
+          { character: "ร", label: "r" },
+          { character: "น", label: "n" },
+          { character: "ย", label: "y" },
+          { character: "บ", label: "b" },
+          { character: "ล", label: "l" }
+        ],
+        [
+          { character: "ฟ", label: "f" },
+          { character: "ห", label: "h" },
+          { character: "ก", label: "k" },
+          { character: "ด", label: "d" },
+          { character: "เ", label: "e" },
+          { character: "้", label: "้" },
+          { character: "่", label: "่" },
+          { character: "า", label: "a" },
+          { character: "ส", label: "s" },
+          { character: "ว", label: "w" },
+          { character: "ง", label: "ng" }
+        ],
+        [
+          { character: " ", label: "Space", width: 4, type: "special" }
+        ]
+      ]
     }
   };
 
@@ -597,14 +803,14 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
       { id: "ru8", phrase: "Повторите, пожалуйста", translation: "Please say that again", category: "Learning" }
     ],
     thai: [
-      { id: "th1", phrase: "สีสัน", translation: "Hello", category: "Greetings" },
+      { id: "th1", phrase: "สวัสดี", translation: "Hello", category: "Greetings" },
       { id: "th2", phrase: "ขอบคุณ", translation: "Thank you", category: "Greetings" },
       { id: "th3", phrase: "ขอโทษ", translation: "I'm sorry", category: "Greetings" },
       { id: "th4", phrase: "ชื่ออะไร", translation: "What is your name?", category: "Questions" },
-      { id: "th5", phrase: "ผม/ฉันชื่อ [ชื่อ]", translation: "My name is [name]", category: "Introductions" },
+      { id: "th5", phrase: "ผม/[ชื่อ]", translation: "My name is [name]", category: "Introductions" },
       { id: "th6", phrase: "มาจากไหน", translation: "Where are you from?", category: "Questions" },
       { id: "th7", phrase: "ช้าๆ หน่อย", translation: "Please speak slowly", category: "Learning" },
-      { id: "th8", phrase: "คุณพูดอีกครั้งไหม", translation: "Please say that again", category: "Learning" }
+      { id: "th8", phrase: "อีกครั้งไหม", translation: "Please say that again", category: "Learning" }
     ]
   };
 
@@ -743,7 +949,7 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
                 definitions: [
                   {
                     definition: "Hello / Greetings",
-                    example: "สีสัน/ค่ะ"
+                    example: "สวัสดี/ค่ะ"
                   }
                 ]
               }
@@ -925,8 +1131,25 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
             </div>
 
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-medium">
-                {keyboardLayouts[selectedLanguage]?.name || "Keyboard"}
+              <div className="flex items-center gap-2">
+                <div className="text-sm font-medium">
+                  {keyboardLayouts[selectedLanguage]?.name || "Keyboard"}
+                </div>
+                <Select
+                  value={selectedLanguage}
+                  onValueChange={setSelectedLanguage}
+                >
+                  <SelectTrigger className="w-[180px] h-8">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(keyboardLayouts).map((langId) => (
+                      <SelectItem key={langId} value={langId}>
+                        {keyboardLayouts[langId].name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center space-x-2">
                 <Label htmlFor="keyboard-toggle" className="text-sm">Show Keyboard</Label>
@@ -1153,3 +1376,7 @@ const LanguageTools: React.FC<LanguageToolsProps> = ({ meetingId }) => {
 };
 
 export default LanguageTools;
+
+
+
+

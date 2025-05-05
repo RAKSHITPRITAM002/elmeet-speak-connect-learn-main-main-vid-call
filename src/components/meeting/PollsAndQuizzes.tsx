@@ -161,8 +161,10 @@ const PollsAndQuizzes: React.FC<PollsAndQuizzesProps> = ({
     setPolls((prev: any) => [...prev, poll]);
     setShowCreateDialog(false);
 
-    // Show success message
-    alert(`Poll "${poll.title}" created successfully! You can now launch it to make it available to participants.`);
+    // Show success message with option to launch immediately
+    if (confirm(`Poll "${poll.title}" created successfully! Would you like to launch it now?`)) {
+      launchPoll(poll.id);
+    }
 
     // Reset form
     setNewPoll({

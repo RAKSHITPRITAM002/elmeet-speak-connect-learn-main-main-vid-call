@@ -8,6 +8,12 @@ export type Participant = {
   hasAudio: boolean;
   hasVideo: boolean;
   videoElement?: React.ReactNode;
+  background?: {
+    type: "blur" | "image" | "none";
+    url?: string;
+    name: string;
+    fit?: "cover" | "contain" | "fill";
+  };
 };
 
 interface VideoGridProps {
@@ -83,14 +89,29 @@ const renderParticipantVideo = (participant: Participant, isMain: boolean) => {
   if (participant.hasVideo) {
     return (
       <div className="relative w-full h-full">
-        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+        {/* Background layer */}
+        {participant.background && participant.background.type === 'image' && participant.background.url && (
+          <div 
+            className="absolute inset-0 z-0" 
+            style={{
+              backgroundImage: `url(${participant.background.url})`,
+              backgroundSize: participant.background.fit || 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              transform: 'scale(1.05)', /* Slightly scale up to avoid any gaps at edges */
+              filter: 'brightness(0.9)' /* Slightly dim the background to make video more visible */
+            }}
+          />
+        )}
+        
+        <div className={`w-full h-full ${!participant.background || participant.background.type === 'none' ? 'bg-gray-800' : ''} flex items-center justify-center relative z-10`}>
           <div className={`${isMain ? 'text-2xl' : 'text-sm'} text-white`}>
             {participant.name}'s Video
           </div>
         </div>
         
         {/* Indicator overlays */}
-        <div className="absolute bottom-2 left-2 flex items-center space-x-1">
+        <div className="absolute bottom-2 left-2 flex items-center space-x-1 z-20">
           {!participant.hasAudio && (
             <div className="bg-red-500 rounded-full p-1">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
@@ -106,21 +127,36 @@ const renderParticipantVideo = (participant: Participant, isMain: boolean) => {
           )}
         </div>
         
-        <div className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded text-white text-xs">
+        <div className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded text-white text-xs z-20">
           {participant.name}
         </div>
       </div>
     );
   } else {
     return (
-      <div className="flex flex-col items-center justify-center h-full w-full p-4">
-        <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center text-white text-xl mb-2">
+      <div className="flex flex-col items-center justify-center h-full w-full p-4 relative">
+        {/* Background layer for video-off state */}
+        {participant.background && participant.background.type === 'image' && participant.background.url && (
+          <div 
+            className="absolute inset-0 z-0" 
+            style={{
+              backgroundImage: `url(${participant.background.url})`,
+              backgroundSize: participant.background.fit || 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              opacity: 0.7,
+              filter: 'brightness(0.7) blur(1px)'
+            }}
+          />
+        )}
+        
+        <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center text-white text-xl mb-2 z-10 relative">
           {participant.name.charAt(0).toUpperCase()}
         </div>
-        <p className="text-white text-center">{participant.name}</p>
+        <p className="text-white text-center font-medium z-10 relative">{participant.name}</p>
         
         {!participant.hasAudio && (
-          <div className="mt-2 bg-red-500 rounded-full p-1">
+          <div className="mt-2 bg-red-500 rounded-full p-1 z-10 relative">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
               <line x1="1" y1="1" x2="23" y2="23"></line>
               <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>

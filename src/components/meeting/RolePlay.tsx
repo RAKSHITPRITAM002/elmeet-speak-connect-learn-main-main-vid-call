@@ -328,15 +328,47 @@ const RolePlay: React.FC<RolePlayProps> = ({
     const scenario = [...scenarios, ...sampleScenarios].find(s => s.id === scenarioId);
     if (!scenario) return;
 
+    // Assign random roles to participants if available
+    const assignRoles = () => {
+      if (participants.length > 0 && scenario.characters.length > 0) {
+        // Create a copy of participants and shuffle them
+        const shuffledParticipants = [...participants].sort(() => Math.random() - 0.5);
+        
+        // Create a mapping of character IDs to participant IDs
+        const roleAssignments: Record<string, string> = {};
+        
+        // Assign roles (up to the number of available participants)
+        const maxAssignments = Math.min(shuffledParticipants.length, scenario.characters.length);
+        for (let i = 0; i < maxAssignments; i++) {
+          roleAssignments[scenario.characters[i].id] = shuffledParticipants[i].id;
+        }
+        
+        return roleAssignments;
+      }
+      return {};
+    };
+
+    const roleAssignments = assignRoles();
+    
     const activeScenario: RolePlayScenario = {
       ...scenario,
-      isActive: true
+      isActive: true,
+      characters: scenario.characters.map(character => ({
+        ...character,
+        assignedToUserId: roleAssignments[character.id],
+        assignedToUserName: participants.find(p => p.id === roleAssignments[character.id])?.name
+      }))
     };
 
     // If this is a sample scenario, add it to the user's scenarios
     if (sampleScenarios.some(s => s.id === scenarioId)) {
       const newScenarioId = Math.random().toString(36).substring(2, 9);
-      const newScenario = { ...scenario, id: newScenarioId, isActive: true };
+      const newScenario = { 
+        ...scenario, 
+        id: newScenarioId, 
+        isActive: true,
+        roleAssignments: roleAssignments
+      };
       
       // Deactivate all other scenarios first
       const updatedScenarios = scenarios.map((s: any) => ({ ...s, isActive: false }));
@@ -354,7 +386,7 @@ const RolePlay: React.FC<RolePlayProps> = ({
     } else {
       // Update the scenario to be active and deactivate all others
       const updatedScenarios = scenarios.map((s: { id: string; }) =>
-        s.id === scenarioId ? { ...s, isActive: true } : { ...s, isActive: false }
+        s.id === scenarioId ? { ...s, isActive: true, roleAssignments: roleAssignments } : { ...s, isActive: false }
       );
 
       setScenarios(updatedScenarios as RolePlayScenario[]);
@@ -369,8 +401,12 @@ const RolePlay: React.FC<RolePlayProps> = ({
       setActiveScenario(activeScenario);
     }
 
-    // Show success message
-    alert(`Scenario "${activeScenario.title}" started successfully! You can now assign roles to participants.`);
+    // Show success message with role assignments
+    const roleMessage = Object.keys(roleAssignments).length > 0 
+      ? `\n\nRoles have been automatically assigned to participants. You can adjust them in the Active Scenario tab.`
+      : '';
+      
+    alert(`Scenario "${activeScenario.title}" started successfully! You can now assign roles to participants.${roleMessage}`);
 
     // Switch to active tab
     setActiveTab("active");
@@ -1017,6 +1053,7 @@ const RolePlay: React.FC<RolePlayProps> = ({
 };
 
 export default RolePlay;
+
 
 
 
