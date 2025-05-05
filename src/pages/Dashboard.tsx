@@ -124,6 +124,7 @@ const Dashboard = () => {
               className="mb-4 w-full"
             />
             <div className="flex flex-wrap gap-2">
+              {/* Enhanced Setup Button - More prominent */}
               <Button 
                 onClick={() => {
                   const meetingId = generateUniqueID();
@@ -133,9 +134,49 @@ const Dashboard = () => {
                   localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Enhanced Meeting');
                   navigate(url);
                 }} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 font-bold shadow-lg rounded-md transform transition-transform hover:scale-105"
               >
                 Start Meeting with Enhanced Setup
+              </Button>
+              
+              {/* Other meeting options */}
+              <Button 
+                onClick={() => handleInstantMeeting(false)} 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+              >
+                Start Now
+              </Button>
+              <Button 
+                onClick={() => handleInstantMeeting(true)} 
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
+              >
+                Start Now (New UI)
+              </Button>
+              <Button 
+                onClick={() => {
+                  const meetingId = generateUniqueID();
+                  const url = `/meeting-enhanced/${meetingId}`;
+                  setInstantMeetingURL(`${window.location.origin}${url}`);
+                  // Store meeting title in localStorage for use in the meeting page
+                  localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Enhanced Meeting');
+                  window.open(url, '_blank');
+                }} 
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2"
+              >
+                Start Enhanced Meeting
+              </Button>
+              <Button 
+                onClick={() => {
+                  const meetingId = generateUniqueID();
+                  const url = `/meeting-prejoin/${meetingId}`;
+                  setInstantMeetingURL(`${window.location.origin}${url}`);
+                  // Store meeting title in localStorage for use in the meeting page
+                  localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Pre-Join Meeting');
+                  navigate(url);
+                }} 
+                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2"
+              >
+                Start Meeting with Setup
               </Button>
             </div>
           </div>
@@ -219,14 +260,42 @@ const Dashboard = () => {
                         <td className="py-3 px-4">
                           <div className="flex space-x-2">
                             <div className="flex space-x-1">
+                              {/* Enhanced Setup Button - More prominent */}
                               <Button 
                                 onClick={() => {
                                   localStorage.setItem('currentMeetingTitle', meeting.title);
                                   navigate(`/meeting-prejoin-enhanced/${meeting.id}`);
                                 }}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-2 py-1"
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 font-bold shadow-md rounded-md"
                               >
-                                Join Meeting
+                                Join with Enhanced Setup
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  localStorage.setItem('currentMeetingTitle', meeting.title);
+                                  navigate(`/meeting/${meeting.id}`);
+                                }}
+                                className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1"
+                              >
+                                Join
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  localStorage.setItem('currentMeetingTitle', meeting.title);
+                                  navigate(`/meeting-new/${meeting.id}`);
+                                }}
+                                className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1"
+                              >
+                                Join (New UI)
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  localStorage.setItem('currentMeetingTitle', meeting.title);
+                                  window.open(`/meeting-enhanced/${meeting.id}`, '_blank');
+                                }}
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-2 py-1"
+                              >
+                                Join (Enhanced)
                               </Button>
                             </div>
                             <Button 
