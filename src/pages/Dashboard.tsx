@@ -151,6 +151,19 @@ const Dashboard = () => {
               >
                 Start Meeting with Setup
               </Button>
+              <Button 
+                onClick={() => {
+                  const meetingId = generateUniqueID();
+                  const url = `/meeting-prejoin-background/${meetingId}`;
+                  setInstantMeetingURL(`${window.location.origin}${url}`);
+                  // Store meeting title in localStorage for use in the meeting page
+                  localStorage.setItem('currentMeetingTitle', instantMeetingTitle || 'Meeting with Background Selection');
+                  navigate(url);
+                }} 
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2"
+              >
+                Start with Background Selection
+              </Button>
             </div>
           </div>
           {instantMeetingURL && (
@@ -242,6 +255,15 @@ const Dashboard = () => {
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 font-bold shadow-md rounded-md"
                               >
                                 Join with Enhanced Setup
+                              </Button>
+                              <Button 
+                                onClick={() => {
+                                  localStorage.setItem('currentMeetingTitle', meeting.title);
+                                  navigate(`/meeting-prejoin-background/${meeting.id}`);
+                                }}
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1 font-bold shadow-md rounded-md"
+                              >
+                                Join with Background
                               </Button>
                               <Button 
                                 onClick={() => {

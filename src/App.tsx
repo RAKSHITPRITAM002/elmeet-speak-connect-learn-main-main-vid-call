@@ -21,6 +21,7 @@ import SubscriptionCheckout from "./pages/SubscriptionCheckout";
 import BillingManagement from "./pages/BillingManagement";
 import MeetingPreJoin from "./pages/MeetingPreJoin";
 import MeetingPreJoinEnhanced from "./pages/MeetingPreJoinEnhanced";
+import MeetingPreJoinBackground from "./pages/MeetingPreJoinBackground";
 // Import contexts
 import { AuthProvider } from "./contexts/AuthContext";
 import { SubscriptionProvider } from "./contexts/SubscriptionContext";
@@ -55,6 +56,7 @@ const App = () => {
             <Route path="/meeting-enhanced/:meetingId?" element={<MeetingEnhanced />} />
             <Route path="/meeting-prejoin/:meetingId?" element={<MeetingPreJoin />} />
             <Route path="/meeting-prejoin-enhanced/:meetingId?" element={<MeetingPreJoinEnhanced />} />
+            <Route path="/meeting-prejoin-background/:meetingId?" element={<MeetingPreJoinBackground />} />
 
             {/* Admin pages */}
             <Route path="/admin" element={<AdminDashboard />} />

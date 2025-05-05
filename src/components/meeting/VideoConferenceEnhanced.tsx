@@ -131,7 +131,7 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
   const screenShareVideoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Detect device type on component mount
+  // Detect device type and load background on component mount
   useEffect(() => {
     // Check if mobile device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -147,6 +147,18 @@ const VideoConferenceEnhanced: React.FC<VideoConferenceProps> = ({
       isMobile,
       isIOS
     });
+    
+    // Load background from localStorage if available
+    try {
+      const savedBackground = localStorage.getItem('selected_background');
+      if (savedBackground) {
+        const parsedBackground = JSON.parse(savedBackground);
+        setCurrentBackground(parsedBackground);
+        console.log('Loaded background from localStorage:', parsedBackground);
+      }
+    } catch (error) {
+      console.error('Error loading background from localStorage:', error);
+    }
   }, []);
 
   // Handle permission granted

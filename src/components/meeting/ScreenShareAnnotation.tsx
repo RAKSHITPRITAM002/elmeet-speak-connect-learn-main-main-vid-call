@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import FloatingAnnotationToolbar from './FloatingAnnotationToolbar';
+import ScreenShareAnnotationToolbar from './ScreenShareAnnotationToolbar';
 
 interface ScreenShareAnnotationProps {
   isScreenSharing: boolean;
@@ -91,15 +91,70 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
     contextRef.current.strokeStyle = currentColor;
     contextRef.current.lineWidth = currentWidth;
   }, [currentColor, currentWidth]);
+  
+  // Update cursor style when tool changes
+  useEffect(() => {
+    if (!isAnnotating) return;
+    
+    // Set appropriate cursor based on the current tool
+    if (canvasRef.current) {
+      switch (currentTool) {
+        case 'pointer':
+          canvasRef.current.style.cursor = 'default';
+          break;
+        case 'pen':
+        case 'highlighter':
+          canvasRef.current.style.cursor = 'crosshair';
+          break;
+        case 'eraser':
+          canvasRef.current.style.cursor = 'not-allowed';
+          break;
+        case 'text':
+          canvasRef.current.style.cursor = 'text';
+          break;
+        default:
+          canvasRef.current.style.cursor = 'crosshair';
+      }
+    }
+  }, [currentTool, isAnnotating]);
 
   // Toggle annotation mode
   const toggleAnnotation = () => {
-    setIsAnnotating(!isAnnotating);
+    const newState = !isAnnotating;
+    setIsAnnotating(newState);
+    
+    // If turning off annotation, set the cursor back to default
+    if (!newState) {
+      if (document.body) {
+        document.body.style.cursor = 'default';
+      }
+      
+      // Also set the tool to pointer to ensure mouse interactions work normally
+      setCurrentTool('pointer');
+      
+      // Reset drawing state
+      setIsDrawing(false);
+      
+      // Make sure the canvas is no longer capturing pointer events
+      if (canvasRef.current) {
+        canvasRef.current.style.pointerEvents = 'none';
+      }
+    } else {
+      // When turning on annotation, make sure the canvas captures pointer events
+      if (canvasRef.current) {
+        canvasRef.current.style.pointerEvents = 'auto';
+      }
+    }
   };
 
   // Handle mouse down
   const startDrawing = (e: React.MouseEvent) => {
     if (!isAnnotating || !contextRef.current) return;
+    
+    // If using pointer tool, don't draw anything
+    if (currentTool === 'pointer') {
+      return;
+    }
     
     const { offsetX, offsetY } = e.nativeEvent;
     
@@ -117,7 +172,15 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
 
   // Handle mouse move
   const draw = (e: React.MouseEvent) => {
-    if (!isDrawing || !isAnnotating || !contextRef.current) return;
+    if (!isAnnotating || !contextRef.current) return;
+    
+    // If using pointer tool, don't draw anything
+    if (currentTool === 'pointer') {
+      return;
+    }
+    
+    // Only proceed with drawing if we're in drawing mode
+    if (!isDrawing) return;
     
     const { offsetX, offsetY } = e.nativeEvent;
     
@@ -154,7 +217,13 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
 
   // Handle mouse up
   const stopDrawing = (e: React.MouseEvent) => {
-    if (!isDrawing || !isAnnotating || !contextRef.current) return;
+    if (!isAnnotating || !contextRef.current) return;
+    
+    // If using pointer tool or not drawing, don't do anything
+    if (currentTool === 'pointer' || !isDrawing) {
+      setIsDrawing(false);
+      return;
+    }
     
     const { offsetX, offsetY } = e.nativeEvent;
     
@@ -385,7 +454,17 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
         <>
           <canvas
             ref={canvasRef}
-            className={`absolute top-0 left-0 w-full h-full z-10 ${isAnnotating ? 'cursor-crosshair' : 'pointer-events-none'}`}
+            className={`absolute top-0 left-0 w-full h-full z-10 ${
+              isAnnotating 
+                ? currentTool === 'pointer' 
+                  ? 'cursor-default' 
+                  : currentTool === 'eraser' 
+                    ? 'cursor-not-allowed' 
+                    : currentTool === 'text' 
+                      ? 'cursor-text' 
+                      : 'cursor-crosshair'
+                : 'pointer-events-none'
+            }`}
             onMouseDown={startDrawing}
             onMouseMove={draw}
             onMouseUp={stopDrawing}
@@ -407,7 +486,7 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
           )}
           
           {/* Floating annotation toolbar */}
-          <FloatingAnnotationToolbar
+          <ScreenShareAnnotationToolbar
             isVisible={isAnnotating}
             onToolChange={setCurrentTool}
             onColorChange={setCurrentColor}
@@ -418,7 +497,6 @@ const ScreenShareAnnotation: React.FC<ScreenShareAnnotationProps> = ({
             currentTool={currentTool}
             currentColor={currentColor}
             currentWidth={currentWidth}
-            isScreenSharing={isScreenSharing}
             onUndo={undoAnnotation}
             onRedo={redoAnnotation}
           />
